@@ -1,5 +1,5 @@
-import { advocates } from "@/db/schema";
 import { CardHeader, CardTitle, CardDescription } from "../ui";
+import { Advocate } from "@/types";
 
 const TableResults = ({ advocates }: { advocates: Advocate[] }) => {
   const advocateCount = advocates.length;

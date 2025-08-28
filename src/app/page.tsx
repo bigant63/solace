@@ -1,39 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui";
 import AdvocateTable from "@/components/advocate-table";
 import SearchComponent from "@/components/SearchComponent";
-import { Advocate } from "@/types";
+import { useAdvocates } from "@/hooks";
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
-
-  const {
-    data: advocates = [],
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ["advocates"],
-    queryFn: async () => {
-      const response = await fetch("/api/advocates");
-      const jsonResponse = await response.json();
-      return jsonResponse.data;
-    },
-  });
-
-  const filteredAdvocates = advocates.filter((advocate: Advocate) => {
-    if (!searchTerm) return true;
-    return (
-      advocate.firstName.includes(searchTerm) ||
-      advocate.lastName.includes(searchTerm) ||
-      advocate.city.includes(searchTerm) ||
-      advocate.degree.includes(searchTerm) ||
-      advocate.specialties.includes(searchTerm) ||
-      advocate.yearsOfExperience.includes(searchTerm)
-    );
-  });
+  const { advocates, isLoading, error } = useAdvocates(searchTerm);
 
   const handleSearch = (searchTerm: string) => {
     setSearchTerm(searchTerm);
@@ -53,7 +28,7 @@ export default function Home() {
       <SearchComponent onSearch={handleSearch} searchTerm={searchTerm} />
 
       <AdvocateTable
-        advocates={filteredAdvocates}
+        advocates={advocates}
         isLoading={isLoading}
         error={error}
       />

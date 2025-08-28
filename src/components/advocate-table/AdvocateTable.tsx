@@ -5,34 +5,26 @@ import { Table, Column, AutoSizer } from "react-virtualized";
 import { AdvocateTableProps } from "@/types";
 import TableResults from "./TableResults";
 import { createColumns } from "./columns";
-import { useState, useCallback } from "react";
+import { useCallback } from "react";
+// should choose a smaller dependency than react-virtualized
+// this works best with the specialties column
+// on initial load
+// after search the row heights get weird
 
 export default function AdvocateTable({
   advocates,
   isLoading,
   error,
 }: AdvocateTableProps) {
-  const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
-
-  const handleColumnResize = useCallback(
-    ({ dataKey, deltaX }: { dataKey: string; deltaX: number }) => {
-      setColumnWidths((prev) => ({
-        ...prev,
-        [dataKey]: Math.max(100, (prev[dataKey] || 0) + deltaX),
-      }));
-    },
-    []
-  );
-
-  // Calculate dynamic row heights based on specialties content
   const getRowHeight = useCallback(
     ({ index }: { index: number }) => {
       const advocate = advocates[index];
       if (!advocate) return 120; // fallback height
 
+      // dynamic row height hack to account for specialties
       const specialties = advocate.specialties;
-      const baseHeight = 80; // base height for other content
-      const specialtyHeight = Math.max(1, specialties.length) * 20; // 24px per specialty item
+      const baseHeight = 80;
+      const specialtyHeight = Math.max(1, specialties.length) * 24;
       const padding = 10;
 
       return Math.max(120, baseHeight + specialtyHeight + padding);
@@ -62,36 +54,40 @@ export default function AdvocateTable({
     <Card>
       <TableResults advocates={advocates} />
       <CardContent className="p-0">
-        <div className="h-[600px]">
-          <AutoSizer>
-            {({ height, width }) => {
-              const columns = createColumns(width);
+        {advocates.length ? (
+          <div className="h-[600px]">
+            <AutoSizer>
+              {({ height, width }) => {
+                const columns = createColumns(width);
 
-              return (
-                <Table
-                  width={width}
-                  height={height}
-                  rowCount={advocates.length}
-                  rowHeight={getRowHeight}
-                  rowGetter={rowGetter}
-                  headerHeight={60}
-                  className="ReactVirtualized__Table"
-                  headerClassName="ReactVirtualized__Table__headerRow"
-                  rowClassName="ReactVirtualized__Table__row"
-                  onColumnResize={handleColumnResize}
-                  resizableColumns={true}
-                >
-                  {columns.map((columnProps, index) => (
-                    <Column
-                      key={`${columnProps.dataKey}-${index}`}
-                      {...columnProps}
-                    />
-                  ))}
-                </Table>
-              );
-            }}
-          </AutoSizer>
-        </div>
+                return (
+                  <Table
+                    width={width}
+                    height={height}
+                    rowCount={advocates.length}
+                    rowHeight={getRowHeight}
+                    rowGetter={rowGetter}
+                    headerHeight={60}
+                    className="ReactVirtualized__Table"
+                    headerClassName="ReactVirtualized__Table__headerRow"
+                    rowClassName="ReactVirtualized__Table__row"
+                  >
+                    {columns.map((columnProps, index) => (
+                      <Column
+                        key={`${columnProps.dataKey}-${index}`}
+                        {...columnProps}
+                      />
+                    ))}
+                  </Table>
+                );
+              }}
+            </AutoSizer>
+          </div>
+        ) : (
+          <h2 className="p-6 text-3xl font-bold flex justify-center">
+            No advocates found
+          </h2>
+        )}
       </CardContent>
     </Card>
   );
