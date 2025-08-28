@@ -22,9 +22,9 @@ export default function AdvocateTable({
       if (!advocate) return 120; // fallback height
 
       // dynamic row height hack to account for specialties
-      const specialties = advocate.specialties;
+
       const baseHeight = 80;
-      const specialtyHeight = Math.max(1, specialties.length) * 24;
+      const specialtyHeight = advocate.specialties.length * 24;
       const padding = 10;
 
       return Math.max(120, baseHeight + specialtyHeight + padding);
@@ -84,9 +84,12 @@ export default function AdvocateTable({
             </AutoSizer>
           </div>
         ) : (
-          <h2 className="p-6 text-3xl font-bold flex justify-center">
-            No advocates found
-          </h2>
+          <div className="p-6 text-center">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+              No advocates found
+            </h2>
+            <p className="text-gray-600">Try adjusting your search criteria</p>
+          </div>
         )}
       </CardContent>
     </Card>

@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui";
 import AdvocateTable from "@/components/advocate-table";
 import SearchComponent from "@/components/SearchComponent";
+import Hero from "@/components/Hero";
 import { useAdvocates } from "@/hooks";
 
 export default function Home() {
@@ -15,23 +15,16 @@ export default function Home() {
   };
 
   return (
-    <main className="container mx-auto p-6 space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-3xl font-bold">Solace Advocates</CardTitle>
-          <CardDescription>
-            Find and search through our network of advocates
-          </CardDescription>
-        </CardHeader>
-      </Card>
-
-      <SearchComponent onSearch={handleSearch} searchTerm={searchTerm} />
-
-      <AdvocateTable
-        advocates={advocates}
-        isLoading={isLoading}
-        error={error}
-      />
+    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      <Hero />
+      <div className="container mx-auto px-6 py-8 space-y-6">
+        <SearchComponent onSearch={handleSearch} searchTerm={searchTerm} />
+        <AdvocateTable
+          advocates={advocates}
+          isLoading={isLoading}
+          error={error}
+        />
+      </div>
     </main>
   );
 }
